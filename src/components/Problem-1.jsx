@@ -1,22 +1,39 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { ADD_TASK } from "../redux/actions";
+
+import { addTask } from "../redux/slices/task.slice";
+
 const Problem1 = () => {
   const [show, setShow] = useState("all");
   const dispatch = useDispatch();
-  const task = useSelector((state) => state);
-  console.log(task);
+  const task = useSelector((state) => state.task.allTask) || [];
+  const [allTask, setAllTask] = useState(task);
+
+  useEffect(() => {
+    setAllTask(task);
+  }, [task]);
 
   const handlerSubmit = (event) => {
     event.preventDefault();
     const form = event.target;
     const name = form.name.value;
     const status = form.status.value;
-    dispatch({
-      type: ADD_TASK,
-      payload: { name, status },
-    });
+
+    dispatch(addTask({ name, status }));
+
     form.reset();
+  };
+
+  const handleClick = (value) => {
+    setShow(value);
+    if (value === "all") {
+      setAllTask(task);
+
+      return;
+    }
+    setAllTask(
+      allTask.filter(({ status }) => String(status).toLowerCase() === value)
+    );
   };
 
   return (
@@ -92,13 +109,12 @@ const Problem1 = () => {
               </tr>
             </thead>
             <tbody>
-              {showInformation.length > 0 &&
-                showInformation.map((info, i) => (
-                  <tr key={i}>
-                    <td>{info.name}</td>
-                    <td>{info.status}</td>
-                  </tr>
-                ))}
+              {allTask.map((info, i) => (
+                <tr key={i}>
+                  <td>{info.name}</td>
+                  <td>{info.status}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

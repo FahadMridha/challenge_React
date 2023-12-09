@@ -1,18 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import { InputGroup } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
+import Modal_C from "./Modal_C";
 
 const Modal_B = ({ data }) => {
   const { show2, handleClose2, area, contacts, setContacts } = data;
+  const [selectedContact, setSelectedContact] = useState(null);
 
   const handlerEvenContacts = (evenContacts) => {
-    // console.log(evenContact);
     const EvenContacts = evenContacts.filter((contact) => contact.id % 2 === 0);
-    // console.log(EvenContacts);
     setContacts(EvenContacts);
   };
-  const textColor = area == "All Contacts" ? "#46139f" : "#ff7f50";
+
+  const handleContactClick = (contact) => {
+    setSelectedContact(contact);
+  };
+
+  const textColor = area === "All Contacts" ? "#46139f" : "#ff7f50";
 
   return (
     <div>
@@ -27,7 +32,9 @@ const Modal_B = ({ data }) => {
         </Modal.Header>
         <Modal.Body>
           {contacts.map((contact, index) => (
-            <p key={index}>{contact.phone}</p>
+            <p key={index} onClick={() => handleContactClick(contact)}>
+              {contact.phone}
+            </p>
           ))}
         </Modal.Body>
         <Modal.Footer>
@@ -42,6 +49,12 @@ const Modal_B = ({ data }) => {
           </Button>
         </Modal.Footer>
       </Modal>
+      {selectedContact && (
+        <Modal_C
+          contact={selectedContact}
+          handleCloseC={() => setSelectedContact(null)}
+        />
+      )}
     </div>
   );
 };
